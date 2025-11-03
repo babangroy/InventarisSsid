@@ -6,9 +6,7 @@ use App\Filament\Clusters\Master\MasterCluster;
 use App\Filament\Clusters\Master\Resources\Jenis\Pages\ManageJenis;
 use App\Models\Jenis;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -86,13 +84,7 @@ class JenisResource extends Resource
                             return;
                         }
                     })
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label('Hapus Terpilih'),
-                ]),
-            ]);
+                ]);
     }
 
     public static function getPages(): array

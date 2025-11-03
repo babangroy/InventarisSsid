@@ -6,9 +6,7 @@ use App\Filament\Clusters\Master\MasterCluster;
 use App\Filament\Clusters\Master\Resources\Mereks\Pages\ManageMereks;
 use App\Models\Merek;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -87,13 +85,7 @@ class MerekResource extends Resource
                             return;
                         }
                     }),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label('Hapus Terpilih'),
-                ]),
-            ]);
+                ]);
     }
 
     public static function getPages(): array

@@ -7,9 +7,7 @@ use App\Filament\Clusters\Master\Resources\Barangs\Pages\ManageBarangs;
 use App\Models\Barang;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -145,12 +143,6 @@ class BarangResource extends Resource
                     ->modalWidth('md'),
                 DeleteAction::make()
                     ->label('Hapus'),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->label('Hapus Terpilih'),
-                ]),
             ]);
     }
 

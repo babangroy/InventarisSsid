@@ -9,25 +9,25 @@ use App\Models\Merek;
 use App\Models\Pengadaan;
 use BackedEnum;
 use Filament\Actions\Action;
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PengadaanResource extends Resource
 {
     protected static ?string $model = Pengadaan::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTruck;
+
+    protected static string | UnitEnum | null $navigationGroup = 'Pengadaan';
 
     protected static ?string $recordTitleAttribute = 'barang_id';
 
@@ -206,12 +206,7 @@ class PengadaanResource extends Resource
                     }),
 
                 DeleteAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+                ]);
     }
 
     public static function getPages(): array

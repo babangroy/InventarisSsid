@@ -33,7 +33,7 @@ class ManagePengadaans extends ManageRecords
                     ]);
 
                     Notification::make()
-                        ->title('Pengadaan berhasil ditambahkan')
+                        ->title('Data berhasil dibuat')
                         ->success()
                         ->send();
 

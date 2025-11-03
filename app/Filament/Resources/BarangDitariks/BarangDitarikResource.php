@@ -226,6 +226,7 @@ class BarangDitarikResource extends Resource
                         }
 
                         BarangKeluar::create([
+                            'baru_bekas' => 'Bekas',
                             'barang_id' => $record->barang_id,
                             'sn' => $record->sn,
                             'tujuan' => $data['tujuan'],
@@ -236,7 +237,7 @@ class BarangDitarikResource extends Resource
 
                         Notification::make()
                             ->title('Berhasil')
-                            ->body('Barang berhasil digunakan kembali dan dihapus dari daftar penarikan.')
+                            ->body('Barang berhasil digunakan kembali.')
                             ->success()
                             ->send();
                     }),

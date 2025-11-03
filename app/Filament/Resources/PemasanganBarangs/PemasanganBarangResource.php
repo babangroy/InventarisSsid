@@ -6,6 +6,7 @@ use App\Filament\Resources\PemasanganBarangs\Pages\ManagePemasanganBarangs;
 use App\Models\Barang;
 use App\Models\BarangDitarik;
 use App\Models\BarangKeluar;
+use App\Models\Pengadaan;
 use BackedEnum;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -17,14 +18,18 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use UnitEnum;
 
 class PemasanganBarangResource extends Resource
@@ -45,24 +50,67 @@ class PemasanganBarangResource extends Resource
     {
         return $schema
             ->components([
+                Select::make('baru_bekas')
+                    ->label('Baru/Bekas?')
+                    ->options([
+                        'Baru' => 'Baru',
+                        'Bekas' => 'Bekas'
+                    ])
+                    ->native(false)
+                    ->required()
+                    ->live()
+                    ->disabled(fn ($operation) => $operation === 'edit')
+                    ->afterStateUpdated(function ($state, Set $set) {
+                        $set('barang_id', null);
+                        $set('sn', null);
+                        $set('tujuan', null);
+                        $set('tanggal_pasang', null);
+                    })
+                    ->validationMessages([
+                        'required' => 'Baru/Bekas tidak boleh kosong',
+                    ])
+                    ->columnSpanFull(),
+
                 Select::make('barang_id')
                     ->label('Nama Barang')
                     ->required()
                     ->preload()
                     ->native(false)
                     ->searchable()
-                    ->options(
-                        Barang::with(['jenis:id,nama', 'merek:id,nama'])
-                            ->orderBy('nama')
-                            ->get()
-                            ->mapWithKeys(function ($barang) {
-                                $jenis = $barang->jenis?->nama ?? '-';
-                                $merek = $barang->merek?->nama ?? '-';
-                                return [
-                                    $barang->id => "{$barang->nama} - {$merek} ({$jenis})"
-                                ];
-                            })
-                    )
+                    ->options(function (Get $get) {
+                        $jenisBaruBekas = $get('baru_bekas');
+                        
+                        if ($jenisBaruBekas === 'Baru') {
+                            return Pengadaan::with(['barang.jenis', 'barang.merek'])
+                                ->whereHas('barang')
+                                ->orderBy('id')
+                                ->get()
+                                ->mapWithKeys(function ($pengadaan) {
+                                    $barang = $pengadaan->barang;
+                                    $jenis = $barang->jenis?->nama ?? '-';
+                                    $merek = $barang->merek?->nama ?? '-';
+                                    $jumlah = $pengadaan->jumlah;
+                                    return [
+                                        $barang->id => "{$barang->nama} - {$merek} ({$jenis}) - Stok: {$jumlah}"
+                                    ];
+                                });
+                        } 
+                        elseif ($jenisBaruBekas === 'Bekas') {
+                            return Barang::with(['jenis', 'merek'])
+                                ->orderBy('nama')
+                                ->get()
+                                ->mapWithKeys(function ($barang) {
+                                    $jenis = $barang->jenis?->nama ?? '-';
+                                    $merek = $barang->merek?->nama ?? '-';
+                                    return [
+                                        $barang->id => "{$barang->nama} - {$merek} ({$jenis})"
+                                    ];
+                                });
+                        }
+                        
+                        return [];
+                    })
+                    ->disabled(fn (Get $get): bool => !in_array($get('baru_bekas'), ['Baru', 'Bekas']))
                     ->validationMessages([
                         'required' => 'Nama Barang tidak boleh kosong',
                     ])
@@ -73,6 +121,7 @@ class PemasanganBarangResource extends Resource
                     ->unique(ignoreRecord: true)
                     ->required()
                     ->maxLength(50)
+                    ->disabled(fn (Get $get): bool => !in_array($get('baru_bekas'), ['Baru', 'Bekas']))
                     ->validationMessages([
                         'required' => 'Serial Number tidak boleh kosong',
                         'maxLength' => 'Serial Number maksimal :max karakter',
@@ -84,6 +133,7 @@ class PemasanganBarangResource extends Resource
                     ->label('Tujuan Pemasangan')
                     ->required()
                     ->maxLength(50)
+                    ->disabled(fn (Get $get): bool => !in_array($get('baru_bekas'), ['Baru', 'Bekas']))
                     ->validationMessages([
                         'required' => 'Tujuan Pemasangan tidak boleh kosong',
                         'maxLength' => 'Tujuan Pemasangan maksimal :max karakter',
@@ -95,6 +145,7 @@ class PemasanganBarangResource extends Resource
                     ->native(false)
                     ->displayFormat('d M Y')
                     ->required()
+                    ->disabled(fn (Get $get): bool => !in_array($get('baru_bekas'), ['Baru', 'Bekas']))
                     ->validationMessages([
                         'required' => 'Tanggal Pemasangan tidak boleh kosong',
                     ])
@@ -111,6 +162,14 @@ class PemasanganBarangResource extends Resource
                     ->label('No.')
                     ->rowIndex()
                     ->width('70px'),
+
+                TextColumn::make('baru_bekas')
+                    ->label('Baru/Bekas?')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Baru' => 'success',
+                        'Bekas' => 'warning',
+                    }),
 
                 TextColumn::make('barang.nama')
                     ->label('Nama/Tipe')
@@ -142,6 +201,14 @@ class PemasanganBarangResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('baru_bekas')
+                    ->label('Baru/Bekas?')
+                    ->options([
+                        'Baru' => 'Baru',
+                        'Bekas' => 'Bekas',
+                    ])
+                    ->native(false),
+                    
                 Filter::make('tanggal_pasang')
                     ->schema([
                         DatePicker::make('tgl_awal')
@@ -248,7 +315,20 @@ class PemasanganBarangResource extends Resource
                     ->label('Ubah')
                     ->modalWidth('md'),
                 DeleteAction::make()
-                    ->label('Hapus'),
+                    ->label('Hapus')
+                    ->after(function ($record) {
+                        if (!$record || $record->baru_bekas !== 'Baru' || !$record->barang_id) {
+                            return;
+                        }
+
+                        DB::transaction(function () use ($record) {
+                            $pengadaan = Pengadaan::where('barang_id', $record->barang_id)->first();
+                            
+                            if ($pengadaan) {
+                                $pengadaan->increment('jumlah');
+                            }
+                        });
+                    })
                 ]);
     }
 

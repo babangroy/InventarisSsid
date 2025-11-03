@@ -11,6 +11,7 @@ class BarangKeluar extends Model
 
     protected $fillable = [
         'barang_id',
+        'baru_bekas',
         'sn',
         'tujuan',
         'tanggal_pasang',

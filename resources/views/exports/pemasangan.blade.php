@@ -56,6 +56,7 @@
 
     <div class="info">
         <div><strong>{{ $periode }}</strong></div>
+        <div><strong>{{ $kondisi }}</strong></div>
     </div>
 
     <table>
@@ -68,6 +69,7 @@
                 <th>Serial Number</th>
                 <th>Tempat Pemasangan</th>
                 <th>Tanggal Pemasangan</th>
+                <th>Baru / Bekas?</th>
             </tr>
         </thead>
         <tbody>
@@ -86,6 +88,7 @@
                         -
                     @endif
                 </td>
+                <td class="text-left">{{ $record->baru_bekas }}</td>
             </tr>
             @endforeach
         </tbody>

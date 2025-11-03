@@ -3,7 +3,6 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
-use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -33,7 +32,6 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogo(asset('images/LOGO-LIGHT.png'))
             ->darkModeBrandLogo(asset('images/LOGO-DARK.png'))  
             ->brandLogoHeight('3rem')
-            ->userMenu(position: UserMenuPosition::Sidebar)
             ->colors([
                 'primary' => Color::Violet,
             ])
@@ -48,10 +46,6 @@ class AdminPanelProvider extends PanelProvider
                 Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
-            ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
-            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->discoverClusters(in: app_path('Filament/Clusters'), for: 'App\\Filament\\Clusters')
@@ -69,7 +63,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->spa(hasPrefetching: true)
+            ->spa()
             ->sidebarCollapsibleOnDesktop();
     }
 }
