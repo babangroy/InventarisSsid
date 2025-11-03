@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
+use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,6 +30,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(Login::class)
+            ->brandLogo(asset('images/LOGO-LIGHT.png'))
+            ->darkModeBrandLogo(asset('images/LOGO-DARK.png'))  
+            ->brandLogoHeight('3rem')
+            ->userMenu(position: UserMenuPosition::Sidebar)
             ->colors([
                 'primary' => Color::Violet,
             ])

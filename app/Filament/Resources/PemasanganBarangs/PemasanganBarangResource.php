@@ -48,25 +48,21 @@ class PemasanganBarangResource extends Resource
                 Select::make('barang_id')
                     ->label('Nama Barang')
                     ->required()
-                    ->options(function () {
-                        return Barang::query()
-                            ->select(['id', 'nama', 'jenis_id', 'merek_id'])
-                            ->with([
-                                'jenis:id,nama',
-                                'merek:id,nama',
-                            ])
+                    ->preload()
+                    ->native(false)
+                    ->searchable()
+                    ->options(
+                        Barang::with(['jenis:id,nama', 'merek:id,nama'])
                             ->orderBy('nama')
                             ->get()
                             ->mapWithKeys(function ($barang) {
                                 $jenis = $barang->jenis?->nama ?? '-';
                                 $merek = $barang->merek?->nama ?? '-';
                                 return [
-                                    $barang->id => "{$barang->nama} - {$merek} ({$jenis})",
+                                    $barang->id => "{$barang->nama} - {$merek} ({$jenis})"
                                 ];
-                            });
-                    })
-                    ->searchable()
-                    ->native(false)
+                            })
+                    )
                     ->validationMessages([
                         'required' => 'Nama Barang tidak boleh kosong',
                     ])

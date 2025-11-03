@@ -69,7 +69,7 @@ class BarangResource extends Resource
                             ->maxLength(40) 
                             ->validationMessages([
                                 'required' => 'Jenis Barang wajib diisi.',
-                                'max_length' => 'Jenis Barang maksimal :max karakter.',
+                                'max.length' => 'Jenis Barang maksimal :max karakter.',
                                 'unique' => 'Jenis Barang sudah ada.',
                             ])
                     ])
