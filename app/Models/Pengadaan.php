@@ -13,6 +13,7 @@ class Pengadaan extends Model
         'barang_id',
         'merek_id',
         'jenis_id',
+        'jumlah_awal',
         'jumlah',
         'tgl_masuk',
     ];

@@ -39,7 +39,8 @@ class PengadaanPreview extends TableWidget
                 TextColumn::make('jenis.nama')
                     ->label('Jenis'),
 
-                TextColumn::make('jumlah'),
+                TextColumn::make('jumlah_awal')
+                    ->label('Jumlah'),
 
                 TextColumn::make('tgl_masuk')
                     ->date('d M Y'),

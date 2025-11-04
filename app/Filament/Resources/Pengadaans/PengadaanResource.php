@@ -41,6 +41,10 @@ class PengadaanResource extends Resource
                     ->searchable()
                     ->preload()
                     ->native(false)
+                    ->disabled(function ($operation, $record) {if ($operation !== 'edit' || !$record) 
+                        return false;
+                        return $record->jumlah_awal !== $record->jumlah;
+                    })
                     ->options(
                         Barang::with(['jenis', 'merek'])
                             ->orderBy('nama')
@@ -135,8 +139,13 @@ class PengadaanResource extends Resource
 
                 TextInput::make('jumlah')
                     ->required()
+                    ->disabled(function ($operation, $record) {if ($operation !== 'edit' || !$record) 
+                        return false;
+                        return $record->jumlah_awal !== $record->jumlah;
+                    })
                     ->numeric()
                     ->columnSpanFull(),
+                    
                 DatePicker::make('tgl_masuk')
                     ->required()
                     ->native(false)
@@ -145,17 +154,17 @@ class PengadaanResource extends Resource
             ]);
     }
 
-    public static function getSchema(): array
-    {
-        static $cached;
+    // public static function getSchema(): array
+    // {
+    //     static $cached;
 
-        if (! $cached) {
-            $schema = new Schema;
-            $cached = static::form($schema)->getComponents();
-        }
+    //     if (! $cached) {
+    //         $schema = new Schema;
+    //         $cached = static::form($schema)->getComponents();
+    //     }
 
-        return $cached;
-    }
+    //     return $cached;
+    // }
 
     public static function table(Table $table): Table
     {
@@ -179,7 +188,13 @@ class PengadaanResource extends Resource
                     ->label('Jenis')
                     ->sortable(),
 
+                TextColumn::make('jumlah_awal')
+                    ->label('Jumlah Masuk')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('jumlah')
+                    ->label('Sisa Stok')
                     ->numeric()
                     ->sortable(),
 

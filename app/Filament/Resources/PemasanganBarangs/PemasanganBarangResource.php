@@ -60,6 +60,7 @@ class PemasanganBarangResource extends Resource
                     ->required()
                     ->live()
                     ->disabled(fn ($operation) => $operation === 'edit')
+                    ->hidden(fn ($operation) => $operation === 'edit')
                     ->afterStateUpdated(function ($state, Set $set) {
                         $set('barang_id', null);
                         $set('sn', null);
@@ -111,6 +112,7 @@ class PemasanganBarangResource extends Resource
                         return [];
                     })
                     ->disabled(fn (Get $get): bool => !in_array($get('baru_bekas'), ['Baru', 'Bekas']))
+                    ->hidden(fn ($operation) => $operation === 'edit')
                     ->validationMessages([
                         'required' => 'Nama Barang tidak boleh kosong',
                     ])
